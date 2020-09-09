@@ -26,25 +26,16 @@ func main() {
 	signal.Notify(signals, syscall.SIGUSR1, syscall.SIGUSR2)
 
 	for i := range blocks {
-		if err := updateOutput(&blocks[i]); err != nil {
-			fmt.Fprintf(os.Stderr, "Could not update block: %s", err.Error())
-			os.Exit(1)
-		}
+		updateOutput(&blocks[i])
 	}
 
 	for {
 		printStatus()
 		select {
 		case blockIndex := <-ticks:
-			if err := updateOutput(&blocks[blockIndex]); err != nil {
-				fmt.Fprintf(os.Stderr, "Could not update output: %s", err.Error())
-				os.Exit(1)
-			}
+			updateOutput(&blocks[blockIndex])
 		case signal := <-signals:
-			if err := updateBlocksForSignal(signal); err != nil {
-				fmt.Fprintf(os.Stderr, "Could not update output: %s", err.Error())
-				os.Exit(1)
-			}
+			updateBlocksForSignal(signal)
 		}
 	}
 }
@@ -65,26 +56,23 @@ func generateBlocksTicks(ticks chan int, blockIndex, interval int) {
 	}
 }
 
-func updateBlocksForSignal(signal os.Signal) error {
+func updateBlocksForSignal(signal os.Signal) {
 	for i := range blocks {
 		sigusr1Matches := signal == syscall.SIGUSR1 && blocks[i].updateOnSIGUSR1
 		sigusr2Matches := signal == syscall.SIGUSR2 && blocks[i].updateOnSIGUSR2
 		if sigusr1Matches || sigusr2Matches {
-			if err := updateOutput(&blocks[i]); err != nil {
-				return err
-			}
+			updateOutput(&blocks[i])
 		}
 	}
-	return nil
 }
 
-func updateOutput(block *block) error {
+func updateOutput(block *block) {
 	out, err := exec.Command("sh", "-c", block.command).Output()
 	if err != nil {
-		return err
+		block.output = fmt.Sprintf("Error: %s", err.Error())
+	} else {
+		block.output = strings.TrimSpace(string(out))
 	}
-	block.output = strings.TrimSpace(string(out))
-	return nil
 }
 
 func printStatus() {
