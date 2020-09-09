@@ -66,21 +66,12 @@ func generateBlocksTicks(ticks chan int, blockIndex, interval int) {
 }
 
 func updateBlocksForSignal(signal os.Signal) error {
-	switch signal {
-	case syscall.SIGUSR1:
-		for i := range blocks {
-			if blocks[i].updateOnSIGUSR1 {
-				if err := updateOutput(&blocks[i]); err != nil {
-					return err
-				}
-			}
-		}
-	case syscall.SIGUSR2:
-		for i := range blocks {
-			if blocks[i].updateOnSIGUSR2 {
-				if err := updateOutput(&blocks[i]); err != nil {
-					return err
-				}
+	for i := range blocks {
+		sigusr1Matches := signal == syscall.SIGUSR1 && blocks[i].updateOnSIGUSR1
+		sigusr2Matches := signal == syscall.SIGUSR2 && blocks[i].updateOnSIGUSR2
+		if sigusr1Matches || sigusr2Matches {
+			if err := updateOutput(&blocks[i]); err != nil {
+				return err
 			}
 		}
 	}
