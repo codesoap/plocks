@@ -9,18 +9,18 @@ var blocks = []block{
 	},
 	{
 		command:  `apm -l | awk '{print "⚡ " $0 "%"}'`,
-		interval: 15,
+		interval: "15s",
 	},
 	{
 		command:  `curl 'wttr.in/Berlin?format=1'`,
-		interval: 30 * 60,
+		interval: "1h",
 	},
 	{
 		command:  `ifconfig trunk0 | awk '/inet/ {print $2}'`,
-		interval: 10,
+		interval: "10s",
 	},
 	{
 		command:  `date +'%Y-%m-%d %H:%M'`,
-		interval: 20,
+		interval: "20s",
 	},
 }

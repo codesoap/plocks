@@ -12,7 +12,7 @@ import (
 
 type block struct {
 	command         string
-	interval        int // in seconds; 0 if only initially
+	interval        string // empty string if no regular update is wanted
 	updateOnSIGUSR1 bool
 	updateOnSIGUSR2 bool
 	output          string // the result of the latest execution
@@ -42,14 +42,19 @@ func main() {
 
 func generateTicks(ticks chan int) {
 	for i, block := range blocks {
-		if block.interval > 0 {
+		if block.interval != "" {
 			go generateBlocksTicks(ticks, i, block.interval)
 		}
 	}
 }
 
-func generateBlocksTicks(ticks chan int, blockIndex, interval int) {
-	ticker := time.NewTicker(time.Duration(interval) * time.Second)
+func generateBlocksTicks(ticks chan int, blockIndex int, interval string) {
+	dur, err := time.ParseDuration(interval)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Could not parse interval: %s\n", err.Error())
+		os.Exit(1)
+	}
+	ticker := time.NewTicker(dur)
 	for {
 		<-ticker.C
 		ticks <- blockIndex
