@@ -1,9 +1,15 @@
 plocks is yet another status bar generator and was inspired by
-[Goblocks](https://github.com/Stargarth/Goblocks). plocks allows for
-individual update intervals for each block and triggering updates of
-selected blocks via user signals. It thus uses less resources than many
-other status bar generators and allows for immediate updates when e.g.
-the volume is changed.
+[Goblocks](https://github.com/Stargarth/Goblocks). plocks is simpler
+than any status bar generator I've met before: It just executes shell
+code to generate the output for each block; there are no built-in blocks
+at all. This makes plocks very easy to use and applicable for many
+different operating systems.
+
+The big downside of this is, of course, worse performance than most
+other status bar generators. This is, however, mitigated by plocks'
+ability to update the blocks at independent intervals or even just when
+receiving SIGUSR1 or SIGUSR2. If you have many blocks that need very
+frequent updates, plocks is probably not the best choice for you.
 
 # Installation
 ```shell
