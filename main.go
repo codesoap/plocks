@@ -70,6 +70,8 @@ func updateOutput(block *block) {
 	out, err := exec.Command("sh", "-c", block.command).Output()
 	if err != nil {
 		block.output = fmt.Sprintf("Error: %s", err.Error())
+	} else if len(out) == 0 {
+		block.output = "Error: no output for block"
 	} else {
 		block.output = strings.TrimSpace(string(out))
 	}
