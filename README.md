@@ -23,7 +23,7 @@ go install
 Configure your blocks by modifying `config.go`. Provide
 `updateOnSIGUSR1: true` or `updateOnSIGUSR2: true` for each block that
 shall be updated when plocks receives the respective signal. You can
-send these signals by using something like `pkill -USR1 plocks`. If no
+send these signals by using something like `pkill -USR1 -x plocks`. If no
 `interval` is provided for a block, the block will never be updated
 automatically.
 
